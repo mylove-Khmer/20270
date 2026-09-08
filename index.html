@@ -228,10 +228,80 @@
   </div>
 
   <script>
-    let secondsLeft = 60; // រាប់ថយក្រោយ ៦០ វិនាទី
+    // --- ប្រព័ន្ធសំឡេង Web Audio API ---
+    let audioCtx = null;
+
+    function initAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+    }
+
+    // សំឡេងរាប់ថយក្រោយ (Tick)
+    function playTickSound() {
+      try {
+        initAudio();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(800, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.08);
+      } catch (e) {}
+    }
+
+    // សំឡេងឈ្នះ (Win Fanfare)
+    function playWinSound() {
+      try {
+        initAudio();
+        const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+        notes.forEach((freq, idx) => {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(freq, audioCtx.currentTime + idx * 0.12);
+          gain.gain.setValueAtTime(0.25, audioCtx.currentTime + idx * 0.12);
+          gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + idx * 0.12 + 0.35);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(audioCtx.currentTime + idx * 0.12);
+          osc.stop(audioCtx.currentTime + idx * 0.12 + 0.35);
+        });
+      } catch (e) {}
+    }
+
+    // សំឡេងចាញ់ (Lose Tone)
+    function playLoseSound() {
+      try {
+        initAudio();
+        const tones = [350, 260];
+        tones.forEach((freq, idx) => {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(freq, audioCtx.currentTime + idx * 0.2);
+          gain.gain.setValueAtTime(0.18, audioCtx.currentTime + idx * 0.2);
+          gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + idx * 0.2 + 0.3);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(audioCtx.currentTime + idx * 0.2);
+          osc.stop(audioCtx.currentTime + idx * 0.2 + 0.3);
+        });
+      } catch (e) {}
+    }
+
+    // --- ប្រព័ន្ធហ្គេម ---
+    let secondsLeft = 60;
     let currentRound = 1001;
     let balance = 500;
-    const PRIZE_RATE = 70; // ឈ្នះគុណនឹង ៧០ ដង
+    const PRIZE_RATE = 70;
     let myCurrentBet = null;
 
     const timerText = document.getElementById('timer');
@@ -241,32 +311,33 @@
     const balanceText = document.getElementById('myBalance');
     const historyBar = document.getElementById('historyBar');
 
-    // ប្រព័ន្ធនាឡិការាប់ថយក្រោយ
+    // ដំណើរការរាប់ថយក្រោយ 1 នាទី
     setInterval(() => {
       secondsLeft--;
 
       const displaySec = secondsLeft < 10 ? '0' + secondsLeft : secondsLeft;
       timerText.innerText = `00:${displaySec}`;
 
-      // ៥ វិនាទីចុងក្រោយ បិទមិនឱ្យដាក់ភ្នាល់
+      // ឮសំឡេងរាប់ថយក្រោយនៅ ៥ វិនាទីចុងក្រោយ (Lock Phase)
       if (secondsLeft <= 5 && secondsLeft > 0) {
         timerText.classList.add('lock');
         submitBtn.disabled = true;
         submitBtn.innerText = "បានចាក់សោ (កំពុងចាប់រង្វាន់...)";
+        playTickSound(); // បន្លឺសំឡេង Tick
       }
 
-      // ដល់វិនាទីទី ០ ចេញលទ្ធផល
+      // ដល់វិនាទី 0 -> ចេញលទ្ធផល
       if (secondsLeft <= 0) {
         processResult();
-        secondsLeft = 60; // Reset រាប់ ៦០ វិនាទីសារជាថ្មី
+        secondsLeft = 60;
         timerText.classList.remove('lock');
         submitBtn.disabled = false;
         submitBtn.innerText = "ដាក់ទាយឥឡូវនេះ";
       }
     }, 1000);
 
-    // មុខងារពេលចុចប៊ូតុងចាក់
     function submitBet() {
+      initAudio(); // បើកដំណើរការ AudioContext លើ Browser
       const inputNum = document.getElementById('numField').value;
       const inputMoney = parseInt(document.getElementById('betField').value);
 
@@ -285,11 +356,8 @@
 
       const formattedNum = String(parseInt(inputNum)).padStart(2, '0');
 
-      // កាត់លុយ
       balance -= inputMoney;
       balanceText.innerText = balance;
-
-      // កត់ត្រាការចាក់
       myCurrentBet = { number: formattedNum, amount: inputMoney };
 
       statusBox.innerText = `អ្នកបានចាក់លេខ [${formattedNum}] ចំនួន $${inputMoney} សម្រាប់ជុំ #${currentRound}`;
@@ -297,15 +365,12 @@
       submitBtn.disabled = true;
     }
 
-    // មុខងារចេញលទ្ធផល
     function processResult() {
-      // Random ចាប់លេខ 00-99
       const drawn = Math.floor(Math.random() * 100);
       const winNum = String(drawn).padStart(2, '0');
 
       ballDisplay.innerText = winNum;
 
-      // ពិនិត្យថាត្រូវ ឬខុស
       if (myCurrentBet) {
         if (myCurrentBet.number === winNum) {
           const wonPrize = myCurrentBet.amount * PRIZE_RATE;
@@ -313,9 +378,11 @@
           balanceText.innerText = balance;
           statusBox.innerText = `អបអរសាទរ! ជុំ #${currentRound} ចេញ [${winNum}] អ្នកឈ្នះ +$${wonPrize}!`;
           statusBox.className = "status-alert text-win";
+          playWinSound(); // បន្លឺសំឡេងឈ្នះ
         } else {
           statusBox.innerText = `សោកស្ដាយ! ជុំ #${currentRound} ចេញ [${winNum}] (អ្នកចាញ់ -$${myCurrentBet.amount})`;
           statusBox.className = "status-alert text-lose";
+          playLoseSound(); // បន្លឺសំឡេងចាញ់
         }
         myCurrentBet = null;
       } else {
@@ -323,17 +390,18 @@
         statusBox.className = "status-alert";
       }
 
-      // បន្ថែមលេខទៅក្នុងប្រវត្តិ
       const chip = document.createElement('span');
       chip.className = 'num-chip';
       chip.innerText = winNum;
       historyBar.insertBefore(chip, historyBar.firstChild);
 
-      // ឡើងជុំថ្មី
       currentRound++;
       document.getElementById('roundNum').innerText = `#${currentRound}`;
       document.getElementById('numField').value = '';
     }
+
+    // ចុចលើអេក្រង់ដើម្បីអនុញ្ញាតឱ្យ Browser ចាក់សំឡេង
+    window.addEventListener('click', initAudio, { once: true });
   </script>
 
 </body>
