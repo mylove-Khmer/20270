@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FaFa368 - ហ្គេមទស្សន៍ទាយលេខ ២ ខ្ទង់</title>
+  <title>FaFa368 - ហ្គេមទស្សន៍ទាយលេខ 1 ដល់ 8</title>
   <style>
     * {
       box-sizing: border-box;
@@ -78,8 +78,8 @@
 
     /* ផ្ទាំងបង្ហាញលេខដែលចេញ */
     .ball-container {
-      width: 110px;
-      height: 110px;
+      width: 105px;
+      height: 105px;
       margin: 0 auto 16px;
       background: radial-gradient(circle, #334155 0%, #0f172a 100%);
       border: 3px dashed #facc15;
@@ -87,10 +87,49 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      font-size: 46px;
+      font-size: 52px;
       font-weight: 800;
       color: #facc15;
       box-shadow: inset 0 0 15px rgba(0,0,0,0.5);
+    }
+
+    /* ប៊ូតុងរើសលេខ 1 ដល់ 8 */
+    .section-title {
+      font-size: 13px;
+      color: #cbd5e1;
+      text-align: left;
+      margin-bottom: 8px;
+    }
+    .number-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+    .num-btn {
+      background: #0f172a;
+      border: 2px solid #475569;
+      color: #fff;
+      font-size: 20px;
+      font-weight: bold;
+      padding: 12px 0;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .num-btn:hover:not(:disabled) {
+      border-color: #facc15;
+      color: #facc15;
+    }
+    .num-btn.selected {
+      background: #facc15;
+      color: #0f172a;
+      border-color: #facc15;
+      box-shadow: 0 0 12px rgba(250, 204, 21, 0.4);
+    }
+    .num-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
     }
 
     /* Input Sections */
@@ -106,7 +145,7 @@
     }
     input {
       width: 100%;
-      padding: 11px;
+      padding: 10px;
       border-radius: 8px;
       border: 1px solid #475569;
       background: #0f172a;
@@ -114,13 +153,12 @@
       font-size: 16px;
       text-align: center;
       outline: none;
-      transition: border-color 0.2s;
     }
     input:focus {
       border-color: #facc15;
     }
 
-    /* ប៊ូតុង */
+    /* ប៊ូតុងបញ្ជាក់ */
     .btn-submit {
       width: 100%;
       padding: 13px;
@@ -131,7 +169,7 @@
       font-size: 16px;
       font-weight: bold;
       cursor: pointer;
-      margin-top: 6px;
+      margin-top: 4px;
       transition: background 0.2s;
     }
     .btn-submit:hover:not(:disabled) {
@@ -156,9 +194,9 @@
 
     /* ប្រវត្តិលេខកន្លងមក */
     .history-box {
-      margin-top: 20px;
+      margin-top: 18px;
       border-top: 1px solid #334155;
-      padding-top: 14px;
+      padding-top: 12px;
       text-align: left;
     }
     .history-title {
@@ -176,8 +214,12 @@
       background: #334155;
       color: #facc15;
       font-weight: bold;
-      padding: 5px 12px;
-      border-radius: 6px;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       font-size: 14px;
       flex-shrink: 0;
     }
@@ -186,7 +228,7 @@
 <body>
 
   <div class="game-card">
-    <div class="logo">FAFA368 LOTTO 2D</div>
+    <div class="logo">FAFA368 LUCKY 1-8</div>
     <div class="round-info">
       ជុំទី: <span class="badge" id="roundNum">#1001</span> | 
       ទឹកប្រាក់: <span class="badge" id="myBalance">500</span> $
@@ -198,13 +240,20 @@
       <div class="timer-clock" id="timer">01:00</div>
     </div>
 
-    <!-- ផ្ទាំងគ្រាប់បាល់លេខ -->
-    <div class="ball-container" id="ballDisplay">--</div>
+    <!-- ផ្ទាំងគ្រាប់បាល់លេខដែលចេញ (1 ដល់ 8) -->
+    <div class="ball-container" id="ballDisplay">?</div>
 
-    <!-- កន្លែងបញ្ចូលលេខ និងលុយ -->
-    <div class="form-group">
-      <label>បញ្ចូលលេខ ២ ខ្ទង់ (00 ដល់ 99):</label>
-      <input type="number" id="numField" placeholder="ឧ. 68" min="0" max="99" />
+    <!-- ប៊ូតុងរើសលេខ ១ ដល់ ៨ -->
+    <div class="section-title">ចុចជ្រើសរើសលេខដែលចង់ទាយ (1 ដល់ 8):</div>
+    <div class="number-grid">
+      <button class="num-btn" onclick="selectNumber(1)">1</button>
+      <button class="num-btn" onclick="selectNumber(2)">2</button>
+      <button class="num-btn" onclick="selectNumber(3)">3</button>
+      <button class="num-btn" onclick="selectNumber(4)">4</button>
+      <button class="num-btn" onclick="selectNumber(5)">5</button>
+      <button class="num-btn" onclick="selectNumber(6)">6</button>
+      <button class="num-btn" onclick="selectNumber(7)">7</button>
+      <button class="num-btn" onclick="selectNumber(8)">8</button>
     </div>
 
     <div class="form-group">
@@ -212,17 +261,17 @@
       <input type="number" id="betField" value="5" min="1" />
     </div>
 
-    <button class="btn-submit" id="submitBtn" onclick="submitBet()">ដាក់ទាយឥឡូវនេះ</button>
+    <button class="btn-submit" id="submitBtn" onclick="submitBet()">ដាក់ទាយជុំនេះ</button>
 
-    <div class="status-alert" id="statusBox">សូមបញ្ចូលលេខមុនពេលអស់ម៉ោង!</div>
+    <div class="status-alert" id="statusBox">សូមចុចរើសលេខ 1-8 និងបញ្ចូលទឹកប្រាក់!</div>
 
     <!-- ប្រវត្តិលេខ -->
     <div class="history-box">
       <div class="history-title">ប្រវត្តិលេខចេញចុងក្រោយ:</div>
       <div class="history-items" id="historyBar">
-        <span class="num-chip">12</span>
-        <span class="num-chip">78</span>
-        <span class="num-chip">35</span>
+        <span class="num-chip">3</span>
+        <span class="num-chip">7</span>
+        <span class="num-chip">2</span>
       </div>
     </div>
   </div>
@@ -240,14 +289,13 @@
       }
     }
 
-    // សំឡេងរាប់ថយក្រោយ (Tick)
     function playTickSound() {
       try {
         initAudio();
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
         osc.type = 'sine';
-        osc.frequency.setValueAtTime(800, audioCtx.currentTime);
+        osc.frequency.setValueAtTime(850, audioCtx.currentTime);
         gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
         osc.connect(gain);
@@ -257,11 +305,10 @@
       } catch (e) {}
     }
 
-    // សំឡេងឈ្នះ (Win Fanfare)
     function playWinSound() {
       try {
         initAudio();
-        const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+        const notes = [523.25, 659.25, 783.99, 1046.50];
         notes.forEach((freq, idx) => {
           const osc = audioCtx.createOscillator();
           const gain = audioCtx.createGain();
@@ -277,7 +324,6 @@
       } catch (e) {}
     }
 
-    // សំឡេងចាញ់ (Lose Tone)
     function playLoseSound() {
       try {
         initAudio();
@@ -301,7 +347,8 @@
     let secondsLeft = 60;
     let currentRound = 1001;
     let balance = 500;
-    const PRIZE_RATE = 70;
+    const PRIZE_RATE = 7; // ត្រូវចំលេខ ឈ្នះគុណនឹង ៧ ដង
+    let selectedNum = null;
     let myCurrentBet = null;
 
     const timerText = document.getElementById('timer');
@@ -310,39 +357,61 @@
     const submitBtn = document.getElementById('submitBtn');
     const balanceText = document.getElementById('myBalance');
     const historyBar = document.getElementById('historyBar');
+    const numButtons = document.querySelectorAll('.num-btn');
 
-    // ដំណើរការរាប់ថយក្រោយ 1 នាទី
+    // មុខងារពេលចុចរើសលេខ
+    function selectNumber(num) {
+      if (secondsLeft <= 5 || myCurrentBet) return;
+      initAudio();
+      selectedNum = num;
+
+      numButtons.forEach(btn => {
+        if (parseInt(btn.innerText) === num) {
+          btn.classList.add('selected');
+        } else {
+          btn.classList.remove('selected');
+        }
+      });
+      statusBox.innerText = `អ្នកបានជ្រើសរើសលេខ: [${num}]`;
+    }
+
+    // រាប់ថយក្រោយ 1 នាទី
     setInterval(() => {
       secondsLeft--;
 
       const displaySec = secondsLeft < 10 ? '0' + secondsLeft : secondsLeft;
       timerText.innerText = `00:${displaySec}`;
 
-      // ឮសំឡេងរាប់ថយក្រោយនៅ ៥ វិនាទីចុងក្រោយ (Lock Phase)
+      // ៥ វិនាទីចុងក្រោយ បិទមិនឱ្យចាក់ និងបន្លឺសំឡេង Tick
       if (secondsLeft <= 5 && secondsLeft > 0) {
         timerText.classList.add('lock');
         submitBtn.disabled = true;
-        submitBtn.innerText = "បានចាក់សោ (កំពុងចាប់រង្វាន់...)";
-        playTickSound(); // បន្លឺសំឡេង Tick
+        submitBtn.innerText = "បានចាក់សោ (កំពុងចេញលទ្ធផល...)";
+        numButtons.forEach(b => b.disabled = true);
+        playTickSound();
       }
 
-      // ដល់វិនាទី 0 -> ចេញលទ្ធផល
+      // ដល់វិនាទីទី 0 -> ចេញលទ្ធផល
       if (secondsLeft <= 0) {
         processResult();
         secondsLeft = 60;
         timerText.classList.remove('lock');
         submitBtn.disabled = false;
-        submitBtn.innerText = "ដាក់ទាយឥឡូវនេះ";
+        submitBtn.innerText = "ដាក់ទាយជុំនេះ";
+        numButtons.forEach(b => {
+          b.disabled = false;
+          b.classList.remove('selected');
+        });
+        selectedNum = null;
       }
     }, 1000);
 
     function submitBet() {
-      initAudio(); // បើកដំណើរការ AudioContext លើ Browser
-      const inputNum = document.getElementById('numField').value;
+      initAudio();
       const inputMoney = parseInt(document.getElementById('betField').value);
 
-      if (inputNum === "" || isNaN(inputNum) || parseInt(inputNum) < 0 || parseInt(inputNum) > 99) {
-        alert("សូមបញ្ចូលលេខ ២ ខ្ទង់ពី 00 ដល់ 99!");
+      if (selectedNum === null) {
+        alert("សូមចុចលើប៊ូតុងលេខ (1 ដល់ 8) មួយសិន!");
         return;
       }
       if (isNaN(inputMoney) || inputMoney <= 0) {
@@ -354,20 +423,19 @@
         return;
       }
 
-      const formattedNum = String(parseInt(inputNum)).padStart(2, '0');
-
       balance -= inputMoney;
       balanceText.innerText = balance;
-      myCurrentBet = { number: formattedNum, amount: inputMoney };
+      myCurrentBet = { number: selectedNum, amount: inputMoney };
 
-      statusBox.innerText = `អ្នកបានចាក់លេខ [${formattedNum}] ចំនួន $${inputMoney} សម្រាប់ជុំ #${currentRound}`;
+      statusBox.innerText = `អ្នកបានចាក់លេខ [${selectedNum}] ចំនួន $${inputMoney} សម្រាប់ជុំ #${currentRound}`;
       statusBox.className = "status-alert";
       submitBtn.disabled = true;
+      numButtons.forEach(b => b.disabled = true);
     }
 
     function processResult() {
-      const drawn = Math.floor(Math.random() * 100);
-      const winNum = String(drawn).padStart(2, '0');
+      // ចាប់លេខចៃដន្យ ពីលេខ 1 ដល់លេខ 8 តែប៉ុណ្ណោះ
+      const winNum = Math.floor(Math.random() * 8) + 1;
 
       ballDisplay.innerText = winNum;
 
@@ -376,13 +444,13 @@
           const wonPrize = myCurrentBet.amount * PRIZE_RATE;
           balance += wonPrize;
           balanceText.innerText = balance;
-          statusBox.innerText = `អបអរសាទរ! ជុំ #${currentRound} ចេញ [${winNum}] អ្នកឈ្នះ +$${wonPrize}!`;
+          statusBox.innerText = `អបអរសាទរ! ជុំ #${currentRound} ចេញលេខ [${winNum}] អ្នកឈ្នះ +$${wonPrize}!`;
           statusBox.className = "status-alert text-win";
-          playWinSound(); // បន្លឺសំឡេងឈ្នះ
+          playWinSound();
         } else {
-          statusBox.innerText = `សោកស្ដាយ! ជុំ #${currentRound} ចេញ [${winNum}] (អ្នកចាញ់ -$${myCurrentBet.amount})`;
+          statusBox.innerText = `សោកស្ដាយ! ជុំ #${currentRound} ចេញលេខ [${winNum}] (អ្នកចាញ់ -$${myCurrentBet.amount})`;
           statusBox.className = "status-alert text-lose";
-          playLoseSound(); // បន្លឺសំឡេងចាញ់
+          playLoseSound();
         }
         myCurrentBet = null;
       } else {
@@ -390,6 +458,7 @@
         statusBox.className = "status-alert";
       }
 
+      // បន្ថែមលេខចូលប្រវត្តិ
       const chip = document.createElement('span');
       chip.className = 'num-chip';
       chip.innerText = winNum;
@@ -397,10 +466,8 @@
 
       currentRound++;
       document.getElementById('roundNum').innerText = `#${currentRound}`;
-      document.getElementById('numField').value = '';
     }
 
-    // ចុចលើអេក្រង់ដើម្បីអនុញ្ញាតឱ្យ Browser ចាក់សំឡេង
     window.addEventListener('click', initAudio, { once: true });
   </script>
 
